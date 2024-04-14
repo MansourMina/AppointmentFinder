@@ -8,7 +8,7 @@
       crossorigin="anonymous"
     ></script>
 
-    <script src="js/controller.js" type="text/javascript"></script>
+    <script src="js/appointments.js" type="text/javascript"></script>
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -22,179 +22,30 @@
     ></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+      rel="stylesheet"
+    />
     <title>Appointment Finder</title>
-    <style>
-      td,
-      th:not(:first-child):hover {
-        background: grey;
-      }
-
-      th > p {
-        font-weight: 500;
-        margin: 0;
-        padding: 2px;
-      }
-
-      th:not(:first-child):hover {
-        background-color: lightblue;
-        cursor: pointer;
-      }
-
-      .clicked,
-      .star-checked {
-        background-color: lightblue;
-      }
-
-      .slot-date {
-        font-weight: bolder;
-        font-size: 30px;
-      }
-
-      /* .checkbox {
-      } */
-
-      .unchecked::before {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 500;
-        content: '\f0c8';
-        font-size: 30px;
-        font-style: normal;
-      }
-      .checked::before {
-        color: green;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 500;
-        content: '\f14a';
-        font-size: 30px;
-        font-style: normal;
-      }
-
-      .card-header {
-        color: grey;
-        padding: 20px;
-      }
-
-      .card-title {
-        margin-bottom: 20px;
-      }
-
-      .card-header i {
-        margin-right: 4px;
-      }
-    </style>
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <div class="container-fluid p-3">
+    <div class="container-fluid pt-3">
       <!--Search field-->
-      <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm-9">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              id="seachfield"
-              placeholder="Search Appointment"
-            />
-            <button type="button" class="btn btn-success" id="btn_Search">
-              Search
-            </button>
-          </div>
-        </div>
-        <div class="col-sm"></div>
+      <div class="input-group pb-5">
+        <input
+          type="text"
+          class="form-control"
+          id="seachfield"
+          placeholder="Search Appointment"
+        />
+        <button type="button" class="btn btn-success" id="btn_Search">
+          Search
+        </button>
       </div>
 
-      <!-- message -->
-      <div class="row">
-        <div class="col-sm"></div>
-        <div class="col-sm-9 my-5" id="searchResult">
-          <div class="card">
-            <div class="card-header">
-              <h2 class="card-title">Fussball</h2>
-              <p class="card-text">
-                <i class="fa-solid fa-user-tag"></i> Mina is the organizer
-              </p>
-              <p class="card-text"><i class="fa-solid fa-clock"></i> 1 hour</p>
-              <p class="card-text">
-                <i class="fa-solid fa-location-dot"></i> Wien
-              </p>
-              <p class="card-text">
-                <i class="fa-solid fa-align-left"></i> Fussball wird gespielt
-              </p>
-            </div>
-            <div class="card-body">
-              <table class="table">
-                <thead>
-                  <tr class="text-center">
-                    <th scope="col"></th>
-                    <th scope="col">
-                      <p>SAT</p>
-                      <p class="slot-date">13</p>
-                      <p>APR</p>
-                      <p>09:00 AM - 10:00 AM</p>
-                      <p>1h</p>
-                      <p><i class="fa-solid fa-people-group"></i> 2</p>
-                      <i class="unchecked"></i>
-                    </th>
-                    <th scope="col">
-                      <p>SAT</p>
-                      <p class="slot-date">13</p>
-                      <p>APR</p>
-                      <p>09:00 AM - 10:00 AM</p>
-                      <p>1h</p>
-                      <p><i class="fa-solid fa-people-group"></i> 2</p>
-                      <i class="unchecked"></i>
-                    </th>
-                    <th scope="col">
-                      <p>SAT</p>
-                      <p class="slot-date">13</p>
-                      <p>APR</p>
-                      <p>09:00 AM - 10:00 AM</p>
-                      <p>1h</p>
-                      <p><i class="fa-solid fa-people-group"></i> 2</p>
-                      <i class="unchecked"></i>
-                    </th>
-                    <th scope="col">
-                      <p>SAT</p>
-                      <p class="slot-date">13</p>
-                      <p>APR</p>
-                      <p>09:00 AM - 10:00 AM</p>
-                      <p>1h</p>
-                      <p><i class="fa-solid fa-people-group"></i> 2</p>
-                      <i class="unchecked"></i>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th><i class="fa-regular fa-user"></i> Bertan</th>
-                    <td class="bg-success" onclick="test()"></td>
-                    <td class="bg-danger"></td>
-                    <td class="bg-danger"></td>
-                  </tr>
-                  <tr>
-                    <th><i class="fa-regular fa-user"></i> Mina</th>
-                    <td class="bg-success"></td>
-                    <td class="bg-danger"></td>
-                    <td class="bg-success"></td>
-                  </tr>
-                  <tr>
-                    <th><i class="fa-regular fa-user"></i> Mina</th>
-                    <td class="bg-success"></td>
-                    <td class="bg-success"></td>
-                    <td class="bg-success"></td>
-                  </tr>
-                </tbody>
-              </table>
-              <a href="#" class="btn card-link">Vote</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm"></div>
+      <div id="appointments">
+        
       </div>
     </div>
   </body>
