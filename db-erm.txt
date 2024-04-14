@@ -1,0 +1,45 @@
+  +-----------------------+
+  |    Appointment        |   
+  +-----------------------+
+  | - id: int             |
+  | - title: string       |
+  | - description: string |
+  | - creator_id: int     |
+  +-----------------------+
+          | 1      n
+          |
+          |
+          |
+          v
+  +-------------------+
+  |      User         |   
+  +-------------------+
+  | - id: int         |
+  | - username: string|
+  | - email: string   |
+  +-------------------+
+          | 1      n
+          |
+          |
+          |
+          v
+  +-----------------------+
+  |     TimeSlot          |   
+  +-------------------    +
+  | - id: int             |
+  | - start_time: datetime|
+  | - end_time: datetime  |
+  | - appointment_id: int |
+  +-----------------------+
+          | 1      n
+          |
+          |
+          |
+          v
+  +-------------------+
+  |       Vote        |   
+  +-------------------+
+  | - id: int         |
+  | - id_user: int    |
+  | - id_timeslot: int|
+  +-------------------+
