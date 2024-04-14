@@ -1,0 +1,17 @@
+{
+  "name": "appointment-finder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "lite-server",
+    "watch": "tsc.cmd -w",
+    "build": "tsc.cmd js/app.ts"
+  },
+  "author": "MM",
+  "license": "ISC",
+  "dependencies": {
+    "lite-server": "^2.6.1",
+    "typescript": "^5.4.5"
+  }
+}
