@@ -112,7 +112,11 @@ function loaddata() {
     data: { method: 'queryAppointments' },
     dataType: 'json',
     success: function (response) {
+      console.log(response);
       appointments(response);
+    },
+    error: (error) => {
+      console.log(error);
     },
   });
 }
