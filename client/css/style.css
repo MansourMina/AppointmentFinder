@@ -16,10 +16,10 @@ th:not(:first-child):hover {
   cursor: pointer;
 }
 
-.clicked,
-.star-checked {
+.checked-slot {
   background-color: lightblue;
 }
+
 
 .slot-date {
   font-weight: bolder;

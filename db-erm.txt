@@ -4,20 +4,19 @@
 +----------------------+           +----------------------+
 | appointment_id (PK) |<--------->| slot_id(PK)      |
 | title                |           | appointment_id (FK) |
-| location             |           | date                |
+| location             |           | end                |
+                                    start
 | date                 |           +----------------------+
 | expiry_date          |
 +----------------------+
 
-       |
-       |
-       v
+
 
 +----------------------+       +-------------------------+
-|         users|       | 		users_slot
+|         users|       | 		    users_slot
 +----------------------+       +-------------------------+
 | user_id (PK)         |       | user_id (FK)             |
-| firstname|       		| slot_id(FK)           |
+| firstname|       		|         slot_id(FK)           |
   lastname
 +----------------------+       | comment                 |
                               +-------------------------+
