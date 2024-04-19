@@ -48,7 +48,10 @@ class DataHandler
 
     public function queryUserFromAppointment($appointment_id)
     {
-        $sql = "SELECT DISTINCT users.*
+        $sql = "SELECT DISTINCT users.*, (SELECT comment 
+             FROM users_slots 
+             WHERE users_slots.user_id = users.user_id 
+             LIMIT 1) AS comment
             FROM appointments
             JOIN slots ON appointments.appointment_id = slots.appointment_id
             JOIN users_slots ON slots.slot_id = users_slots.slot_id
@@ -79,9 +82,38 @@ class DataHandler
         return $creds;
     }
 
+    public function addSlotsByAppointmentId($data)
+    {
+
+        $user_id = $this->addUser($data["name"]);
+        foreach ($data["slots"] as $slot_id) {
+            $this->addUserSlots($user_id, $slot_id, $data["comment"]);
+        }
+    }
+
+    private function addUser($name)
+    {
+        $sql = "INSERT INTO users(`name`) VALUES (?)";
+        $stmt = db->prepare($sql);
+        $stmt->bind_param("s", $name);
+        $stmt->execute();
+        $insertedUserId = $stmt->insert_id;
+        return $insertedUserId;
+    }
+
+    private function addUserSlots($user_id, $slot_id, $comment)
+    {
+        $sql = "INSERT INTO users_slots(`user_id`, `slot_id`, `comment`) "
+            . "VALUES (?, ?, ?)";
+        $stmt = db->prepare($sql);
+        $stmt->bind_param("iis", $user_id, $slot_id, $comment);
+        $stmt->execute();
+        return $stmt;
+    }
+
     private static function getAppointments()
     {
-        $sql = "SELECT appointments.*, users.firstname as organizer_firstname, users.lastname as organizer_lastname FROM appointments join users ON appointments.organizer_id = users.user_id";
+        $sql = "SELECT appointments.*, users.name as organizer_name FROM appointments join users ON appointments.organizer_id = users.user_id";
         $stmt = db->prepare($sql);
         $stmt->execute();
         $res = $stmt->get_result();

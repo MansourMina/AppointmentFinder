@@ -11,6 +11,10 @@ th > p {
   padding: 2px;
 }
 
+.unclickable {
+  pointer-events: none;
+}
+
 th:not(:first-child):hover {
   background-color: lightblue;
   cursor: pointer;
@@ -19,7 +23,6 @@ th:not(:first-child):hover {
 .checked-slot {
   background-color: lightblue;
 }
-
 
 .slot-date {
   font-weight: bolder;
@@ -49,6 +52,24 @@ th:not(:first-child):hover {
   font-style: normal;
 }
 
+.show-slot-info::before {
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 500;
+  content: '\f150';
+  font-size: 20px;
+  font-style: normal;
+}
+
+.hide-slot-info::before {
+  color: lightblue;
+
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 500;
+  content: '\f151';
+  font-size: 20px;
+  font-style: normal;
+}
+
 .card-header {
   color: grey;
   padding: 20px;
@@ -62,7 +83,7 @@ th:not(:first-child):hover {
   margin-right: 4px;
 }
 
-.container-fluid{
+.container-fluid {
   padding-left: 5vw;
   padding-right: 5vw;
 }

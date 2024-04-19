@@ -2,7 +2,7 @@ $(document).ready(function () {
   load_appointments();
 });
 
-function appointmentSlots(slots) {
+function appointmentSlots(isExpired, slots) {
   let tRow = $('<tr>').addClass('text-center');
   let emptySlot = $('<th>').attr('scope', 'col');
   let thead = $('<thead>');
@@ -11,7 +11,7 @@ function appointmentSlots(slots) {
     slots.forEach((slot) => {
       let column = $('<th>')
         .attr({ scope: 'col', id: 'slot-' + slot.slot_id })
-        .addClass('slot');
+        .addClass(`slot ${isExpired ? 'unclickable' : ''}`);
       let headerContent = [
         { class: '', text: slot.weekday.toUpperCase() },
         { class: 'slot-date', text: slot.day },
@@ -37,9 +37,10 @@ function appointmentSlots(slots) {
         element.append($('<span>').text(item.text));
         column.append(element);
       });
-      let voteButton = $('<i>').addClass('unchecked checkbox');
-
-      column.append(voteButton);
+      if (!isExpired) {
+        let voteButton = $('<i>').addClass('unchecked checkbox');
+        column.append(voteButton);
+      }
       tRow.append(column);
     });
   } else {
@@ -67,7 +68,8 @@ function votes(slots) {
     slot.votes.forEach((vote) => {
       if (!users[vote.user_id]) {
         users[vote.user_id] = {
-          name: vote.firstname + ' ' + vote.lastname,
+          name: vote.name,
+          comment: vote.comment,
           slots: [],
         };
       }
@@ -78,8 +80,20 @@ function votes(slots) {
   users.forEach((user) => {
     let tRow = $('<tr>');
     let nameColumn = $('<th>')
-      .append($('<i>').addClass('fa-regular fa-user me-2'))
-      .append(user.name);
+      .addClass('')
+      .append(
+        $('<div>')
+          .append($('<i>').addClass('fa-regular fa-user me-2'))
+          .append(user.name),
+      )
+      .append(
+        $('<span>')
+          .addClass(
+            'd-inline-block text-truncate mt-2  mb-0 blockquote-footer comment',
+          )
+          .css('max-width', '400px')
+          .text(user.comment),
+      );
     tRow.append(nameColumn);
 
     slots.forEach((slot) => {
@@ -98,13 +112,12 @@ function votes(slots) {
   return tbody;
 }
 
-function appointmentHeader(appointment) {
+function appointmentHeader(isExpired, appointment) {
   let cardText = $('<div>').addClass('card-text');
-
   let headerContent = [
     {
       class: 'fa-solid fa-user-tag me-2',
-      text: `${appointment.organizer_firstname} is the organizer`,
+      text: `${appointment.organizer_name} is the organizer`,
     },
     // { class: 'fa-solid fa-clock me-2', text: `${appointments.duration} hour` },
     {
@@ -113,7 +126,7 @@ function appointmentHeader(appointment) {
     },
   ];
 
-  let title = $('<h2>').addClass('card-title').text(appointment.title);
+  let title = $('<h5>').addClass('card-title').text(appointment.title);
   cardText.append(title);
   headerContent.forEach((item) => {
     let element = $('<p>')
@@ -129,29 +142,62 @@ function appointmentHeader(appointment) {
         .append($('<span>').text(appointment.description)),
     );
   }
+  if (isExpired) {
+    cardText.append(
+      $('<p>')
+        .append($('<i>').addClass('fa-solid fa-circle-xmark me-2 text-danger'))
+        .append($('<span>').text('Abstimmung beendet')),
+    );
+  } else {
+    cardText.append(
+      $('<p>')
+        .append($('<i>').addClass('fa-solid fa-circle-check me-2 text-success'))
+        .append(
+          $('<span>').html(
+            `Abstimmung läuft bis <strong>${appointment.expiry_date}</strong>`,
+          ),
+        ),
+    );
+  }
+  cardText.append(
+    $('<p>')
+      .append($('<i>').addClass('show-slot-info me-2'))
+      .append($('<span>').text('Slots anzeigen'))
+      .attr('id', `toggleSlotInfo-${appointment.appointment_id}`)
+      .addClass('toggle-slots-info'),
+  );
   return cardText;
 }
 
 function new_user_button(appointment_id) {
   let button = $('<button>')
     .addClass('btn new-user-button')
-    .append($('<i>').addClass('fa-solid fa-plus me-2'))
-    .attr('id', appointment_id);
+    .attr('data-id', appointment_id)
+    .append($('<i>').addClass('fa-solid fa-plus me-2'));
   return button;
+}
+
+function clear_page() {
+  $('#appointments').empty();
 }
 
 function showAppointments(appointments) {
   appointments.forEach((app) => {
-    let card = $('<div>').addClass('card');
+    let card = $('<div>').addClass('card').attr('data-id', app.appointment_id);
     let cardHeader = $('<div>').addClass('card-header');
     let cardBody = $('<div>').addClass('card-body');
     let table = $('<table>').addClass('table');
     let voteBody = $('<div>').addClass('card-body mt-0');
-    voteBody.append(new_user_button(app.appointment_id));
-    table.append(appointmentSlots(app.slots), votes(app.slots));
-    cardHeader.append(appointmentHeader(app));
-    cardBody.append(table);
-    card.append(cardHeader, cardBody, voteBody);
+    let isExpired = new Date(app.expiry_date).getDate() < new Date().getDate();
+    if (!isExpired) voteBody.append(new_user_button(app.appointment_id));
+    table.append(appointmentSlots(isExpired, app.slots), votes(app.slots));
+    cardHeader.append(appointmentHeader(isExpired, app));
+    cardBody
+      .append(table)
+      .append(voteBody)
+      .attr('id', `slotsInfo-${app.appointment_id}`)
+      .hide();
+    card.append(cardHeader, cardBody);
     $('#appointments').append(card.addClass('my-5'));
   });
 }
@@ -270,7 +316,7 @@ async function load_appointments() {
     });
 
     let appointments = await adjust_data(data);
-    console.log(appointments);
     showAppointments(appointments);
+    console.log('OK');
   } catch (error) {}
 }
