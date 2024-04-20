@@ -1,4 +1,4 @@
-let checkedSlots = [];
+let checkedSlots = [{ slots: null }];
 
 $(document).ready(function () {
   $(document).on('click', '.new-user-button', function (e) {
@@ -19,13 +19,13 @@ $(document).ready(function () {
 function check_disability(appointment_id) {
   let input = $(`input.new-user-input[data-id=${appointment_id}]`);
   let voteButton = $(`button.vote-button[data-id=${appointment_id}]`);
+  let slotWithSameAppointment = checkedSlots.find(
+    (el) => el.appointment_id === appointment_id,
+  );
   if (input.length > 0 && voteButton.length > 0) {
-    if (
-      input.val().trim().length > 0 &&
-      checkedSlots.find((el) => el.appointment_id === appointment_id).slots
-        .length > 0
-    ) {
-      voteButton.prop('disabled', false);
+    if (input.val().trim().length > 0 && slotWithSameAppointment) {
+      if (slotWithSameAppointment.slots.length > 0)
+        voteButton.prop('disabled', false);
     } else {
       voteButton.prop('disabled', true);
     }
@@ -68,9 +68,12 @@ function new_user(e) {
 function clear_user_inputs(input, comment, slots, appointment_id) {
   input.val('');
   comment.val('');
-  slots[0].slots.forEach((slot) => {
-    check_slot(`slot-${slot}`);
-  });
+  if (slots[0]) {
+    slots[0].slots.forEach((slot) => {
+      check_slot(`slot-${slot}`);
+    });
+  }
+
   checkedSlots = checkedSlots.filter(
     (slot) => slot.appointment_id != appointment_id,
   );

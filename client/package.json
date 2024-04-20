@@ -3,14 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  
   "scripts": {
     "start": "lite-server",
     "watch": "tsc.cmd -w",
-    "build": "tsc.cmd js/app.ts"
+    "build": "tsc.cmd ts/app.ts"
   },
   "author": "MM",
   "license": "ISC",
   "dependencies": {
+    "@fullcalendar/core": "^6.1.11",
+    "@fullcalendar/daygrid": "^6.1.11",
+    "@fullcalendar/web-component": "^6.1.11",
+    "fullcalendar-scheduler": "^6.1.11",
     "lite-server": "^2.6.1",
     "typescript": "^5.4.5"
   }

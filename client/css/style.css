@@ -14,6 +14,9 @@ th > p {
 .unclickable {
   pointer-events: none;
 }
+i.click {
+  cursor: pointer;
+}
 
 th:not(:first-child):hover {
   background-color: lightblue;
@@ -87,9 +90,15 @@ th:not(:first-child):hover {
   padding-left: 5vw;
   padding-right: 5vw;
 }
+
+
 @media (min-width: 992px) {
   .container-fluid {
     padding-left: 10vw;
     padding-right: 10vw;
   }
+}
+
+#times > .time {
+  margin-right: 20px !important; /* Ändern Sie die Marge nach Bedarf */
 }

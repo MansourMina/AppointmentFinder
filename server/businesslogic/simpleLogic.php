@@ -33,6 +33,9 @@ class SimpleLogic
             case "addSlotsByAppointmentId":
                 $res = $this->dh->addSlotsByAppointmentId($data);
                 break;
+            case "createAppointment":
+                $res = $this->dh->createAppointment($data);
+                break;
             default:
                 $res = null;
                 break;
