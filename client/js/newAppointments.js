@@ -10,28 +10,35 @@ $(document).ready(function () {
   $('#createAppointment').attr('disabled', true);
   field_validation();
   $('#newAppointmentField').hide();
-  $('#showDeadline').hide();
+  $('#showDeadline').show();
   $('#toggleCreateAppointment').on('click', function () {
     toggle_create_button($(this));
-    $('#newAppointmentField').toggle();
-    $('#appointments').toggle();
+    $('#newAppointmentField').slideToggle();
+    $('#appointments').slideToggle();
   });
   $('.addTime').on('click', function () {
     create_time($('#duration').val());
   });
 
   $('#duration').on('change', function () {
-    $('#times').empty();
-    $('.time').remove();
-    create_date($(this).val());
-    create_time($('#duration').val());
-    createDeadline($('.date').val());
+    if ($(this).val() >= 5) {
+      $('#times').empty();
+      $('.time').remove();
+      create_date($(this).val());
+      create_time($(this).val());
+      createDeadline($('.date').val());
+    } else {
+      hideTimes();
+    }
   });
-
-  create_date($('#duration').val());
+  if ($('#duration').val() >= 5) {
+    create_date($(this).val());
+  }
 
   $('#times').on('change', '.time', function () {
-    add_time_slots($(this), $('#duration').val());
+    if ($('#duration').val() >= 5) {
+      add_time_slots($(this), $('#duration').val());
+    }
   });
   $('#expiry_date').on('change', '.deadline', function () {
     choosenSlots.deadline = date_from_picker($(this).val());
@@ -41,10 +48,20 @@ $(document).ready(function () {
     createDeadline($(this).val());
     choosenSlots.appointment_date = date_from_picker($(this).val());
   });
-  $('#createAppointment').on('click', function () {
-    create_appointment();
+  $('#createAppointmentForm').submit(async function (event) {
+    event.preventDefault();
+    clear_page();
+    await create_appointment();
+    reset_new_appointment();
+    await load_appointments();
   });
 });
+
+function hideTimes() {
+  $('#expiry_date').empty();
+  $('#times').empty();
+  $('.addTime').addClass('d-none');
+}
 
 function toggle_create_button(button) {
   var $button = $(button); // Konvertiere button in ein jQuery-Objekt
@@ -83,16 +100,17 @@ function create_date(duration) {
   }
 }
 
-function create_time_picker(withTime, time, duration, minDate) {
-  if (minDate != 0) minDate = date_from_picker(minDate);
+function create_time_picker(withTime, time, duration, maxDate) {
+  if (maxDate != 0) maxDate = date_from_picker(maxDate);
   time.datetimepicker({
     format: 'Y-m-dTH:i',
     inline: true,
     datepicker: !withTime,
     timepicker: withTime,
-    lang: 'de',
+    lang: 'ru',
     step: Number(duration),
-    minDate: minDate,
+    minDate: 0,
+    maxDate: maxDate == 0 ? false : maxDate,
     minTime: '08:00',
     maxTime: '18:30',
     // Deaktivierung vergangener Tage
@@ -123,7 +141,19 @@ function date_from_picker(date) {
 
 function add_time_slots(slot, duration) {
   let selectedDate = date_from_picker(slot.val());
-  var startDate = new Date(selectedDate); // Kopie des Startdatums
+  const pad = (num) => num.toString().padStart(2, '0');
+  const hour = pad(selectedDate.getHours());
+  const minute = pad(selectedDate.getMinutes());
+  const second = pad(selectedDate.getSeconds());
+
+  var startDate = new Date(choosenSlots.appointment_date);
+  startDate.setHours(hour);
+  startDate.setMinutes(minute);
+  startDate.setSeconds(second);
+  if (
+    choosenSlots.slots.find((el) => el.start.getTime() === startDate.getTime())
+  )
+    return;
 
   var endDate = new Date(startDate.getTime());
   endDate.setMinutes(endDate.getMinutes() + Number(duration));
@@ -141,6 +171,7 @@ function field_validation() {
   $('#name').on('change', validate_fields);
   $('#expiry_date').on('change', '.deadline', validate_fields);
   $('#times').on('change', '.date', validate_fields);
+  $('#times').on('change', '.time', validate_fields);
   $('#duration').on('change', validate_fields);
   $('#title').on('change', validate_fields);
   $('#description').on('change', validate_fields);
@@ -159,7 +190,8 @@ function validate_fields() {
     description &&
     location &&
     choosenSlots.appointment_date &&
-    choosenSlots.deadline
+    choosenSlots.deadline &&
+    choosenSlots.slots.length > 0
   ) {
     $('#createAppointment').attr('disabled', false);
 
@@ -170,18 +202,68 @@ function validate_fields() {
 }
 
 function adjust_dates() {
-  choosenSlots.appointment_date = choosenSlots.appointment_date
-    .toISOString()
-    .slice(0, 19)
-    .replace('T', ' ');
-  choosenSlots.deadline = choosenSlots.deadline
-    .toISOString()
-    .slice(0, 19)
-    .replace('T', ' ');
+  const formatDate = (date) => {
+    const pad = (num) => num.toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hour = pad(date.getHours());
+    const minute = pad(date.getMinutes());
+    const second = pad(date.getSeconds());
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  };
+  if (choosenSlots.deadline > choosenSlots.appointment_date) {
+    choosenSlots.deadline = choosenSlots.appointment_date;
+  }
+  choosenSlots.appointment_date = formatDate(
+    new Date(choosenSlots.appointment_date),
+  );
+  choosenSlots.deadline = formatDate(new Date(choosenSlots.deadline));
+
   choosenSlots.slots.forEach((slot) => {
-    slot.start = slot.start.toISOString().slice(0, 19).replace('T', ' ');
-    slot.end = slot.end.toISOString().slice(0, 19).replace('T', ' ');
+    slot.start = formatDate(new Date(slot.start));
+    slot.end = formatDate(new Date(slot.end));
   });
+}
+
+function reset_new_appointment() {
+  $('#name').val('');
+  $('#title').val('');
+  $('#description').val('');
+  $('#location').val('');
+  $('#times').empty();
+  $('.time').remove();
+  $('#expiry_date').empty();
+  $('.addTime').addClass('d-none');
+  choosenSlots = {
+    appointment_date: null,
+    slots: [],
+    deadline: null,
+  };
+  $('#duration').val('');
+  toggle_create_button($('#toggleCreateAppointment'));
+  $('#newAppointmentField').slideToggle();
+  $('#appointments').slideToggle();
+}
+
+function push_storage(appointment_id) {
+  let oldAppointmentsStorage = JSON.parse(localStorage.getItem('appointments'));
+  console.log(oldAppointmentsStorage);
+
+  if (oldAppointmentsStorage != null) {
+    oldAppointmentsStorage.push(appointment_id);
+    localStorage.setItem(
+      'appointments',
+      JSON.stringify(oldAppointmentsStorage),
+    );
+  } else {
+    localStorage.setItem('appointments', JSON.stringify([appointment_id]));
+  }
+}
+
+function get_storage() {
+  let storage = JSON.parse(localStorage.getItem('appointments'));
+  return storage ? storage : [];
 }
 
 async function create_appointment() {
@@ -193,8 +275,8 @@ async function create_appointment() {
   if (!isValid) return;
   adjust_dates();
   try {
-    let adding = await $.ajax({
-      type: 'GET',
+    let appointment_id = await $.ajax({
+      type: 'POST',
       url: '../../server/serviceHandler.php',
       cache: false,
       data: {
@@ -213,7 +295,7 @@ async function create_appointment() {
       },
       dataType: 'json',
     });
-    console.log(adding);
+    push_storage(appointment_id);
   } catch (error) {
     console.log(error);
   }

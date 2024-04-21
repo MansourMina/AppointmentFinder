@@ -38,30 +38,36 @@ function new_user(e) {
   let userField = $('<div>').addClass('row');
   let input = $('<input>')
     .attr({ type: 'text', placeholder: 'Your name', 'data-id': appointment_id })
-    .addClass('form-control new-user-input px-2 col');
+    .addClass('form-control new-user-input px-2 col-4');
   let comment = $('<input>')
     .attr({ type: 'text', placeholder: 'Comment (optional)' })
-    .addClass('form-control new-user-input px-2 col');
-  let voteButton = $('<div>').append(
-    $('<button>')
-      .addClass('btn btn-secondary d-block w-50 mt-3 mx-auto vote-button')
-      .text('Vote')
-      .attr({ disabled: true, 'data-id': appointment_id }),
-  );
+    .addClass('form-control new-user-input px-2 col-4 mt-2');
+  let form = $('<form>').attr('id', 'voteForm');
+  let voteButton = $('<button>')
+    .addClass('btn btn-secondary d-block w-50 mt-3 mx-auto vote-button')
+    .text('Vote')
+    .attr({
+      disabled: true,
+      'data-id': appointment_id,
+      form: 'voteForm',
+      type: 'submit',
+    });
+  form.append(voteButton);
   input.on('input', function () {
     check_disability(appointment_id);
   });
-  voteButton.on('click', async function () {
+  form.on('submit', async function (event) {
+    event.preventDefault();
     let slots = checkedSlots.filter(
       (app) => app.appointment_id === appointment_id,
     );
-    await add_slots(appointment_id, slots, input.val(), comment.val());
+    await add_slots(slots, input.val(), comment.val());
     clear_user_inputs(input, comment, slots, appointment_id);
     clear_page();
     await load_appointments();
     showSlots(appointment_id);
   });
-  userField.append(input, comment, voteButton);
+  userField.append(input, comment, form);
   $(e.currentTarget).replaceWith(userField);
 }
 
@@ -117,10 +123,10 @@ function slots(e) {
   check_disability(appointment_id);
 }
 
-async function add_slots(appointment_id, appointmentSlots, name, comment) {
+async function add_slots(appointmentSlots, name, comment) {
   try {
     await $.ajax({
-      type: 'GET',
+      type: 'POST',
       url: '../../server/serviceHandler.php',
       cache: false,
       data: {

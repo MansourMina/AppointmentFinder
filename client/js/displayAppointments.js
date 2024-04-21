@@ -3,7 +3,17 @@ $(document).ready(function () {
   load_appointments();
 });
 
-function appointmentSlots(isExpired, slots) {
+function get_duration(start, end) {
+  let difference = (new Date(end) - new Date(start)) / (1000 * 60 * 60);
+  if (difference < 0.5) {
+    difference = Math.round(difference * 60);
+    return difference + 'min';
+  } else {
+    return difference.toFixed(1) + 'h';
+  }
+}
+
+function appointmentSlots(isExpired, isEventOver, slots) {
   let tRow = $('<tr>').addClass('text-center');
   let emptySlot = $('<th>').attr('scope', 'col');
   let thead = $('<thead>');
@@ -13,7 +23,7 @@ function appointmentSlots(isExpired, slots) {
       if (slot.appointment_id) {
         let column = $('<th>')
           .attr({ scope: 'col', id: 'slot-' + slot.slot_id })
-          .addClass(`slot ${isExpired ? 'unclickable' : ''}`);
+          .addClass(`slot ${isExpired || isEventOver ? 'unclickable' : ''}`);
         let headerContent = [
           { class: '', text: slot.weekday.toUpperCase() },
           { class: 'slot-date', text: slot.day },
@@ -24,10 +34,7 @@ function appointmentSlots(isExpired, slots) {
           },
           {
             class: '',
-            text:
-              Number(new Date(slot.end) - new Date(slot.start)) /
-                (1000 * 60 * 60) +
-              'h',
+            text: get_duration(slot.start, slot.end),
           },
           {
             class: 'fa-solid fa-people-group me-2',
@@ -43,7 +50,7 @@ function appointmentSlots(isExpired, slots) {
           element.append($('<span>').text(item.text));
           column.append(element);
         });
-        if (!isExpired) {
+        if (!isExpired || !isEventOver) {
           let voteButton = $('<i>').addClass('unchecked checkbox');
           column.append(voteButton);
         }
@@ -128,21 +135,54 @@ function votes(slots) {
   return tbody;
 }
 
-function appointmentHeader(isExpired, appointment) {
+function appointmentHeader(isExpired, isEventOver, appointment) {
   let cardText = $('<div>').addClass('card-text');
   let headerContent = [
+    {
+      class: 'fa-solid fa-calendar-days me-2',
+      text: `${appointment.date}`,
+    },
     {
       class: 'fa-solid fa-user-tag me-2',
       text: `${appointment.organizer_name} is the organizer`,
     },
-    // { class: 'fa-solid fa-clock me-2', text: `${appointments.duration} hour` },
     {
       class: 'fa-solid fa-location-dot me-2',
       text: `${appointment.location}`,
     },
   ];
 
-  let title = $('<h5>').addClass('card-title').text(appointment.title);
+  if (appointment.description) {
+    headerContent.push({
+      class: 'fa-solid fa-align-left me-2',
+      text: appointment.description,
+    });
+  }
+  if (isEventOver) {
+    headerContent.push({
+      class: 'fa-regular fa-calendar-xmark me-2 text-danger',
+      text: 'Event beendet',
+    });
+  } else if (isExpired) {
+    headerContent.push({
+      class: 'fa-solid fa-circle-xmark me-2 text-danger',
+      text: 'Voting ended',
+    });
+  } else {
+    cardText.append(
+      $('<p>')
+        .append($('<i>').addClass('fa-solid fa-circle-check me-2 text-success'))
+        .append(
+          $('<span>').html(
+            `Voting until <strong>${appointment.expiry_date}</strong>`,
+          ),
+        ),
+    );
+  }
+
+  let title = $('<h4>')
+    .addClass('card-title fw-normal')
+    .text(appointment.title);
   cardText.append(title);
   headerContent.forEach((item) => {
     let element = $('<p>')
@@ -151,34 +191,11 @@ function appointmentHeader(isExpired, appointment) {
 
     cardText.append(element);
   });
-  if (appointment.description) {
-    cardText.append(
-      $('<p>')
-        .append($('<i>').addClass('fa-solid fa-align-left me-2'))
-        .append($('<span>').text(appointment.description)),
-    );
-  }
-  if (isExpired) {
-    cardText.append(
-      $('<p>')
-        .append($('<i>').addClass('fa-solid fa-circle-xmark me-2 text-danger'))
-        .append($('<span>').text('Abstimmung beendet')),
-    );
-  } else {
-    cardText.append(
-      $('<p>')
-        .append($('<i>').addClass('fa-solid fa-circle-check me-2 text-success'))
-        .append(
-          $('<span>').html(
-            `Abstimmung läuft bis <strong>${appointment.expiry_date}</strong>`,
-          ),
-        ),
-    );
-  }
+
   cardText.append(
     $('<p>')
       .append($('<i>').addClass('show-slot-info me-2 click'))
-      .append($('<span>').text('Slots anzeigen'))
+      .append($('<span>').text('Slots'))
       .attr('id', `toggleSlotInfo-${appointment.appointment_id}`)
       .addClass('toggle-slots-info'),
   );
@@ -197,28 +214,50 @@ function clear_page() {
   $('#appointments').empty();
 }
 
+function create_delete_button(appointment_id) {
+  return $('<button>')
+    .addClass('btn px-0 mx-0 mb-3 text-danger')
+    .append($('<i>').addClass('fa-regular fa-calendar-minus pe-2'))
+    .append($('<span>').text('Delete'))
+    .on('click', async function () {
+      await delete_appointment(appointment_id);
+      clear_page();
+      await load_appointments();
+    });
+}
+
 function showAppointments(appointments) {
   appointments.forEach((app) => {
-    if (app.slots) {
-      let card = $('<div>')
-        .addClass('card')
-        .attr('data-id', app.appointment_id);
-      let cardHeader = $('<div>').addClass('card-header');
-      let cardBody = $('<div>').addClass('card-body');
-      let table = $('<table>').addClass('table');
-      let voteBody = $('<div>').addClass('card-body mt-0');
+    if (app.slots[0].appointment_id) {
+      let isEventOver = new Date(app.date).getDate() < new Date().getDate();
       let isExpired =
         new Date(app.expiry_date).getDate() < new Date().getDate();
-      if (!isExpired) voteBody.append(new_user_button(app.appointment_id));
-      table.append(appointmentSlots(isExpired, app.slots));
+
+      let card = $('<div>')
+        .addClass('card ')
+        .attr('data-id', app.appointment_id);
+
+      let cardHeader = $('<div>').addClass(
+        `card-header ${isEventOver ? 'event-over' : ''}`,
+      );
+
+      if (get_storage().find((el) => el === app.appointment_id)) {
+        cardHeader.append(create_delete_button(app.appointment_id));
+      }
+      let cardBody = $('<div>').addClass('card-body ');
+      let table = $('<table>').addClass('table ');
+      let voteBody = $('<div>').addClass('card-body mt-0 ');
+
+      if (!isExpired || !isEventOver)
+        voteBody.append(new_user_button(app.appointment_id));
+
+      table.append(appointmentSlots(isExpired, isEventOver, app.slots));
       if (app.slots.filter((el) => el.votes[0].user_id).length > 0)
         table.append(votes(app.slots));
       else {
-        table.append(
-          '<tbody><tr><th>No votes</th><td class="bg-danger"></td></tr></tbody>',
-        );
+        table.append('<tbody><tr><th>No votes</th></tr></tbody>');
       }
-      cardHeader.append(appointmentHeader(isExpired, app));
+      cardHeader.append(appointmentHeader(isExpired, isEventOver, app));
       cardBody
         .append(table)
         .append(voteBody)
@@ -260,16 +299,7 @@ async function get_votes(slot_id, appointment_id) {
     });
     all_participants = merge_votes_users(votes, users);
     return all_participants;
-  } catch (error) {
-    let users = await $.ajax({
-      type: 'GET',
-      url: '../../server/serviceHandler.php',
-      cache: false,
-      data: { method: 'queryUserFromAppointment', param: appointment_id },
-      dataType: 'json',
-    });
-    return [...users].map((user) => ({ ...user, participant: false }));
-  }
+  } catch (error) {}
 }
 
 function get_time(time) {
@@ -330,7 +360,6 @@ async function get_slots(appointment_id) {
 async function adjust_data(appointments) {
   for (const current of appointments) {
     current.slots = await get_slots(current.appointment_id);
-    console.log(current.slots);
   }
   return appointments;
 }
@@ -348,4 +377,23 @@ async function load_appointments() {
     let appointments = await adjust_data(data);
     showAppointments(appointments);
   } catch (error) {}
+}
+
+async function delete_appointment(appointment_id) {
+  try {
+    await $.ajax({
+      type: 'POST',
+      url: '../../server/serviceHandler.php',
+      cache: false,
+      data: {
+        method: 'deleteAppointment',
+        param: appointment_id,
+      },
+      dataType: 'json',
+    });
+    let updatedStorage = get_storage().filter((el) => el != appointment_id);
+    localStorage.setItem('appointments', JSON.stringify(updatedStorage));
+  } catch (error) {
+    console.log(error);
+  }
 }
