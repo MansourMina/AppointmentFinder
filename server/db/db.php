@@ -1,6 +1,6 @@
 <?php
-// Login database credentials from cred.php
-require_once 'cred.php';
+// Login database credentials from config.php
+require_once 'config.php';
 ob_start();
 
 // Establish a mysqli database connection. If connection fails, exit with status 1; Otherwise, define a constant 'db'
