@@ -1,20 +1,20 @@
 <?php
 include_once 'db.php';
 
-class DataHandler
+class DataHandler //Definiert Klasse DataHandler
 {
-    public function queryAppointments()
+    public function queryAppointments() 
     {
-        $res =  $this->getAppointments();
-        return $res;
+        $res =  $this->getAppointments(); //Ruft getAppointments auf und speichert das Ergebnis in $res
+        return $res; //Gibt die gespeicherten Termine zurück
     }
 
-    public function queryAppointmentsById($id)
+    public function queryAppointmentsById($id) //Termine werden anhand ihrer ID gefiltert
     {
-        $result = array();
-        foreach ($this->queryAppointments() as $val) {
-            if ($val[0]->id == $id) {
-                array_push($result, $val);
+        $result = array(); //Initialisiert ein leeres Array, um die Ergebnisse zu speichern
+        foreach ($this->queryAppointments() as $val) { //Durchläuft alle Termine
+            if ($val[0]->id == $id) { //Überprüft, ob die ID des aktuellen Termins mit der gesuchten ID übereinstimmt
+                array_push($result, $val); //Wenn die ID´s übereinstimmen, fügt er den Termin zur Ergebnisarray hinzu
             }
         }
         return $result;
@@ -22,15 +22,15 @@ class DataHandler
 
     public function queryAppintmentsByDate($date)
     {
-        $result = array();
+        $result = array(); //Hier wird das Datum gefiltert
         foreach ($this->queryAppointments() as $val) {
-            if ($val[0]->date == $date) {
+            if ($val[0]->date == $date) { //Überprüft, ob das Datum des aktuellen Termins mit dem gesuchten Datum übereinstimmt
                 array_push($result, $val);
             }
         }
         return $result;
     }
-
+    //Versucht alle Benutzer zu finden, die für einen bestimmten Zeitfenster-Slot gestimmt haben
     public function queryVotesBySlotId($slot_id)
     {
         $sql = "SELECT users.* from slots left join users_slots using(slot_id) left join users using(user_id) where slots.slot_id = ?;";
@@ -45,7 +45,7 @@ class DataHandler
         return $creds;
     }
 
-    public function queryUserFromAppointment($appointment_id)
+    public function queryUserFromAppointment($appointment_id) //Holt einen Benutzer basierend auf einer Termin-ID
     {
         $sql = "SELECT DISTINCT users.*, (SELECT comment 
              FROM users_slots 
