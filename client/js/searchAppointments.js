@@ -1,5 +1,4 @@
 $(document).ready(function () {
-  // Handler für die Suchfunktion
   $('#searchField').on('change', function () {
     search_appointment($(this).val());
   });
@@ -7,6 +6,8 @@ $(document).ready(function () {
 
 function search_appointment(search) {
   var searchTerm = search.toLowerCase();
+  // Durchläuft alle Elemente mit der Klasse .card
+  $('#appointments');
   $('#appointments')
     .find('.card')
     .each(function () {

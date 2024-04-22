@@ -12,6 +12,7 @@ $(document).ready(function () {
   $('#newAppointmentField').hide();
   $('#showDeadline').show();
   $('#toggleCreateAppointment').on('click', function () {
+    // Toggelt das Formular und die Listenansicht und ändert das Aussehen des Buttons
     toggle_create_button($(this));
     $('#newAppointmentField').slideToggle();
     $('#appointments').slideToggle();
@@ -21,6 +22,7 @@ $(document).ready(function () {
   });
 
   $('#duration').on('change', function () {
+    // Leert die Zeitauswahl und erstellt sie neu, basierend auf dem gewählten Zeitintervall
     if ($(this).val() >= 5) {
       $('#times').empty();
       $('.time').remove();
@@ -36,11 +38,13 @@ $(document).ready(function () {
   }
 
   $('#times').on('change', '.time', function () {
+    // Fügt Zeitfenster basierend auf der gewählten Zeit hinzu.
     if ($('#duration').val() >= 5) {
       add_time_slots($(this), $('#duration').val());
     }
   });
   $('#expiry_date').on('change', '.deadline', function () {
+    // Aktualisiert das Ablaufdatum des Termins beim Ändern des Datums.
     choosenSlots.deadline = date_from_picker($(this).val());
   });
   $('#times').on('change', '.date', function () {
@@ -63,20 +67,21 @@ function hideTimes() {
   $('.addTime').addClass('d-none');
 }
 
+// Toggelt "New Appointment"/"Cancel Appointment" Button.
 function toggle_create_button(button) {
-  var $button = $(button); // Konvertiere button in ein jQuery-Objekt
+  var $button = $(button); 
 
   if ($button.hasClass('new')) {
     $button
       .find('i')
       .replaceWith('<i class="fa-solid fa-circle-minus me-2 fa-lg"></i>');
-    $button.find('span').text('Cancel Appointment'); // Verwende .text(), um den Text zu aktualisieren
+    $button.find('span').text('Cancel Appointment'); 
     $button.removeClass('new').addClass('btn-danger');
   } else {
     $button
       .find('i')
       .replaceWith('<i class="fa-solid fa-circle-plus me-2 fa-lg"></i>');
-    $button.find('span').text('New Appointment'); // Verwende .text(), um den Text zu aktualisieren
+    $button.find('span').text('New Appointment'); 
     $button.removeClass('btn-danger').addClass('btn-primary new');
   }
 }
@@ -100,6 +105,7 @@ function create_date(duration) {
   }
 }
 
+// Konfiguriert den DateTimePicker mit oder ohne Uhrzeit.
 function create_time_picker(withTime, time, duration, maxDate) {
   if (maxDate != 0) maxDate = date_from_picker(maxDate);
   time.datetimepicker({
@@ -135,11 +141,11 @@ function date_from_picker(date) {
   var dateString = date.substring(0, 10); // "2024-04-20"
   var hoursMinutes = date.substring(18); // "15:20"
 
-  // Erstellen des datums
   return new Date(dateString + 'T' + hoursMinutes);
 }
 
 function add_time_slots(slot, duration) {
+  // Erstellt ein neuen TimeSlot
   let selectedDate = date_from_picker(slot.val());
   const pad = (num) => num.toString().padStart(2, '0');
   const hour = pad(selectedDate.getHours());
@@ -150,6 +156,8 @@ function add_time_slots(slot, duration) {
   startDate.setHours(hour);
   startDate.setMinutes(minute);
   startDate.setSeconds(second);
+
+  // Falls bereits existiert, dann abbrechen
   if (
     choosenSlots.slots.find((el) => el.start.getTime() === startDate.getTime())
   )
@@ -178,16 +186,14 @@ function field_validation() {
   $('#location').on('change', validate_fields);
 }
 
+// Prüft, ob alle notwendigen Felder ausgefüllt sind, um den Create Button zu enablen
 function validate_fields() {
   var name = $('#name').val();
   var title = $('#title').val();
-  var description = $('#description').val();
   var location = $('#location').val();
-  // Überprüfen, ob alle Felder ausgefüllt sind
   if (
     name &&
     title &&
-    description &&
     location &&
     choosenSlots.appointment_date &&
     choosenSlots.deadline &&
@@ -201,6 +207,7 @@ function validate_fields() {
   }
 }
 
+// Stellt sicher, dass das Ablaufdatum nicht vor dem Termin liegt und passt die Formate an
 function adjust_dates() {
   const formatDate = (date) => {
     const pad = (num) => num.toString().padStart(2, '0');
@@ -246,6 +253,7 @@ function reset_new_appointment() {
   $('#appointments').slideToggle();
 }
 
+// Fügt die neue Appointment-ID zum lokalen Speicher hinzu.
 function push_storage(appointment_id) {
   let oldAppointmentsStorage = JSON.parse(localStorage.getItem('appointments'));
   oldAppointmentsStorage;
@@ -266,6 +274,7 @@ function get_storage() {
   return storage ? storage : [];
 }
 
+// Sendet die Termininformationen zum Server und speichert die erstellte Appointment-ID im local Storage
 async function create_appointment() {
   var name = $('#name').val();
   var title = $('#title').val();

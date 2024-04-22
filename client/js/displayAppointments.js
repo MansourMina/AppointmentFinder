@@ -3,6 +3,7 @@ $(document).ready(function () {
   load_appointments();
 });
 
+// Berechnet die Dauer des Slots und gibt sie in Stunden oder Minuten zurück.
 function get_duration(start, end) {
   let difference = (new Date(end) - new Date(start)) / (1000 * 60 * 60);
   if (difference < 0.5) {
@@ -13,9 +14,10 @@ function get_duration(start, end) {
   }
 }
 
+// Erstellt eine Tabelle für die Verfügbarkeit von Slots
 function appointmentSlots(isExpired, isEventOver, slots) {
   let tRow = $('<tr>').addClass('text-center');
-  let emptySlot = $('<th>').attr('scope', 'col');
+  let emptySlot = $('<th>').attr('scope', 'col'); // Fügt eine leere Kopfzeile hinzu.
   let thead = $('<thead>');
   tRow.append(emptySlot);
   if (slots && slots.length > 0) {
@@ -23,7 +25,9 @@ function appointmentSlots(isExpired, isEventOver, slots) {
       if (slot.appointment_id) {
         let column = $('<th>')
           .attr({ scope: 'col', id: 'slot-' + slot.slot_id })
-          .addClass(`slot ${isExpired || isEventOver ? 'unclickable' : ''}`);
+          .addClass(`slot ${isExpired || isEventOver ? 'unclickable' : ''}`); // Wenn abgelaufen -> nicht anklickbar
+
+        // Slot Inhalte
         let headerContent = [
           { class: '', text: slot.weekday.toUpperCase() },
           { class: 'slot-date', text: slot.day },
@@ -50,7 +54,7 @@ function appointmentSlots(isExpired, isEventOver, slots) {
           element.append($('<span>').text(item.text));
           column.append(element);
         });
-        if (!isExpired || !isEventOver) {
+        if (!isExpired && !isEventOver) {
           let voteButton = $('<i>').addClass('unchecked checkbox');
           column.append(voteButton);
         }
@@ -72,6 +76,7 @@ function appointmentSlots(isExpired, isEventOver, slots) {
   return thead;
 }
 
+// Zeigt die Abstimmungen von User
 function votes(slots) {
   let tbody = $('<tbody>');
   if (!slots || slots.length === 0 || slots == null) {
@@ -80,8 +85,7 @@ function votes(slots) {
     );
   }
 
-  // alle users holen mit allen slots holen
-  let users = [];
+  let users = []; // Speichert alle Nutzer, die abgestimmt haben.
   slots.forEach((slot) => {
     if (slot.votes[0].user_id) {
       slot.votes.forEach((vote) => {
@@ -100,6 +104,7 @@ function votes(slots) {
     }
   });
 
+  // Erzeugt Zeilen für jeden Nutzer mit seinen Daten und Stimmen
   users.forEach((user) => {
     let tRow = $('<tr>');
     let nameColumn = $('<th>')
@@ -135,6 +140,7 @@ function votes(slots) {
   return tbody;
 }
 
+// Erzeugt den Header und zeigt die Informationen des Appointments
 function appointmentHeader(isExpired, isEventOver, appointment) {
   let cardText = $('<div>').addClass('card-text');
   let headerContent = [
@@ -214,6 +220,7 @@ function clear_page() {
   $('#appointments').empty();
 }
 
+// Erstellt einen Delete-Button für einen Appointment
 function create_delete_button(appointment_id) {
   return $('<button>')
     .addClass('btn px-0 mx-0 mb-3 text-danger')
@@ -226,6 +233,7 @@ function create_delete_button(appointment_id) {
     });
 }
 
+// Zeigt alle Appointments auf der Seite an
 function showAppointments(appointments) {
   appointments.forEach((app) => {
     if (app.slots[0].appointment_id) {
@@ -248,7 +256,7 @@ function showAppointments(appointments) {
       let table = $('<table>').addClass('table ');
       let voteBody = $('<div>').addClass('card-body mt-0 ');
 
-      if (!isExpired || !isEventOver)
+      if (!isExpired && !isEventOver)
         voteBody.append(new_user_button(app.appointment_id));
 
       table.append(appointmentSlots(isExpired, isEventOver, app.slots));
@@ -269,6 +277,7 @@ function showAppointments(appointments) {
   });
 }
 
+// Initialisiert die Votes mit den User und ob sie daran teilnehmen
 function merge_votes_users(votes, users) {
   let all_participants = [];
   users.forEach((user) => {
@@ -281,6 +290,7 @@ function merge_votes_users(votes, users) {
   return all_participants;
 }
 
+// Holt die Votes und die User vom Server
 async function get_votes(slot_id, appointment_id) {
   try {
     let votes = await $.ajax({
@@ -302,6 +312,7 @@ async function get_votes(slot_id, appointment_id) {
   } catch (error) {}
 }
 
+// Für das Format einr Zeit: hh:mm
 function get_time(time) {
   time = new Date(time);
   let hours = new Date(time).getHours();
@@ -311,6 +322,7 @@ function get_time(time) {
   return `${hours}:${minutes}`;
 }
 
+// Holt die Slots vom Server und passt sie für das Anzeigen an
 async function get_slots(appointment_id) {
   const weekday = [
     'Sunday',
@@ -364,6 +376,7 @@ async function adjust_data(appointments) {
   return appointments;
 }
 
+// Lädt und zeigt die Appointments nach der Anpassung an
 async function load_appointments() {
   try {
     const data = await $.ajax({
@@ -379,6 +392,7 @@ async function load_appointments() {
   } catch (error) {}
 }
 
+// Löscht einen Termin
 async function delete_appointment(appointment_id) {
   try {
     await $.ajax({
