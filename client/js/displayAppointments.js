@@ -223,7 +223,8 @@ function clear_page() {
 // Erstellt einen Delete-Button für einen Appointment
 function create_delete_button(appointment_id) {
   return $('<button>')
-    .addClass('btn px-0 mx-0 mb-3 text-danger')
+    .addClass('btn px-0 mx-0 mb-3 fw-bold')
+    .css('color', '#A41929')
     .append($('<i>').addClass('fa-regular fa-calendar-minus pe-2'))
     .append($('<span>').text('Delete'))
     .on('click', async function () {

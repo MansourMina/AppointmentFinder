@@ -70,7 +70,6 @@ th:not(:first-child):hover {
 }
 
 .card-header {
-  color: grey;
   padding: 20px;
 }
 

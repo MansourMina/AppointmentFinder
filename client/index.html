@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Appointment Finder">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -50,6 +53,7 @@
           class="form-control"
           id="searchField"
           placeholder="Search Appointment"
+          name="search"
         />
       </div>
       <div>
@@ -69,6 +73,7 @@
                 class="form-control"
                 id="name"
                 placeholder="Max Mustermann"
+                name="name"
               />
             </div>
             <div class="mb-3">
@@ -78,6 +83,7 @@
                 class="form-control"
                 id="title"
                 placeholder="What`s the occasion?"
+                name="title"
               />
             </div>
             <div class="mb-3">
@@ -89,6 +95,7 @@
                 class="form-control"
                 id="description"
                 placeholder="Here you can include things like an agenda, instructions, or other details"
+                name="description"
               ></textarea>
             </div>
             <div class="mb-3">
@@ -98,6 +105,7 @@
                 class="form-control"
                 id="location"
                 placeholder="Where will this happen?"
+                name="location"
               />
             </div>
           </div>
@@ -119,6 +127,7 @@
                 aria-label="Duration"
                 aria-describedby="basic-addon1"
                 id="duration"
+                name="duration"
               />
             </div>
           </div>
@@ -147,6 +156,7 @@
                 form="createAppointmentForm"
                 class="btn btn-success"
                 id="createAppointment"
+                name="create Appointment"
               >
                 Create Appointment
               </button>
