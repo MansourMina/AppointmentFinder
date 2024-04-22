@@ -394,6 +394,6 @@ async function delete_appointment(appointment_id) {
     let updatedStorage = get_storage().filter((el) => el != appointment_id);
     localStorage.setItem('appointments', JSON.stringify(updatedStorage));
   } catch (error) {
-    console.log(error);
+    error;
   }
 }

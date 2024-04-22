@@ -3,33 +3,12 @@ include_once 'db.php';
 
 class DataHandler //Definiert Klasse DataHandler
 {
-    public function queryAppointments() 
+    public function queryAppointments()
     {
         $res =  $this->getAppointments(); //Ruft getAppointments auf und speichert das Ergebnis in $res
         return $res; //Gibt die gespeicherten Termine zurück
     }
 
-    public function queryAppointmentsById($id) //Termine werden anhand ihrer ID gefiltert
-    {
-        $result = array(); //Initialisiert ein leeres Array, um die Ergebnisse zu speichern
-        foreach ($this->queryAppointments() as $val) { //Durchläuft alle Termine
-            if ($val[0]->id == $id) { //Überprüft, ob die ID des aktuellen Termins mit der gesuchten ID übereinstimmt
-                array_push($result, $val); //Wenn die ID´s übereinstimmen, fügt er den Termin zur Ergebnisarray hinzu
-            }
-        }
-        return $result;
-    }
-
-    public function queryAppintmentsByDate($date)
-    {
-        $result = array(); //Hier wird das Datum gefiltert
-        foreach ($this->queryAppointments() as $val) {
-            if ($val[0]->date == $date) { //Überprüft, ob das Datum des aktuellen Termins mit dem gesuchten Datum übereinstimmt
-                array_push($result, $val);
-            }
-        }
-        return $result;
-    }
     //Versucht alle Benutzer zu finden, die für einen bestimmten Zeitfenster-Slot gestimmt haben
     public function queryVotesBySlotId($slot_id)
     {
@@ -55,7 +34,7 @@ class DataHandler //Definiert Klasse DataHandler
             left JOIN slots ON appointments.appointment_id = slots.appointment_id
             left JOIN users_slots ON slots.slot_id = users_slots.slot_id
             left JOIN users ON users_slots.user_id = users.user_id
-            WHERE appointments.appointment_id = ?;";
+            WHERE appointments.appointment_id = ?;"; // ? -> SQL Injection
         $stmt = db->prepare($sql);
         $stmt->bind_param("i", $appointment_id);
         $stmt->execute();
@@ -69,7 +48,7 @@ class DataHandler //Definiert Klasse DataHandler
 
     public function querySlotsByAppointmentId($appointment_id)
     {
-        $sql = "SELECT slots.* from slots right join appointments using(appointment_id) where appointment_id = ?";
+        $sql = "SELECT slots.* from slots right join appointments using(appointment_id) where appointment_id = ? order by slots.start";
         $stmt = db->prepare($sql);
         $stmt->bind_param("i", $appointment_id);
         $stmt->execute();

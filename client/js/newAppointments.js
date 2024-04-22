@@ -248,7 +248,7 @@ function reset_new_appointment() {
 
 function push_storage(appointment_id) {
   let oldAppointmentsStorage = JSON.parse(localStorage.getItem('appointments'));
-  console.log(oldAppointmentsStorage);
+  oldAppointmentsStorage;
 
   if (oldAppointmentsStorage != null) {
     oldAppointmentsStorage.push(appointment_id);
@@ -297,6 +297,6 @@ async function create_appointment() {
     });
     push_storage(appointment_id);
   } catch (error) {
-    console.log(error);
+    error;
   }
 }

@@ -1,7 +1,7 @@
 <?php
 include("businesslogic/simpleLogic.php");
 
-$request = $_SERVER['REQUEST_METHOD'];
+$request = $_SERVER['REQUEST_METHOD']; // Holt den type vom Client
 $method = "";
 $param = "";
 $body = "";
@@ -16,18 +16,14 @@ if ($request == "POST") {
     $body = isset($_GET["body"]) ? $_GET["body"] : "";
 }
 
-$logic = new SimpleLogic();
+$logic = new SimpleLogic(); // Erstellt eine Instanz der Klasse SimpleLogic
 $result = $logic->handleRequest($method, $param, $body);
 
-// if ($request == "GET") {
 if ($result == null) {
-    response($request, 204, $result);
-} else if ($result == -1) {
-    response($request, 400, $result);
-} else {
+    response($request, 204, null);
+}  else {
     response($request, 200, $result);
 }
-// }
 
 function response($request, $httpStatus, $data)
 {

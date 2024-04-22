@@ -31,10 +31,6 @@ th:not(:first-child):hover {
   font-weight: bolder;
   font-size: 30px;
 }
-
-/* .checkbox {
-      } */
-
 .unchecked::before {
   margin-top: 20px;
   margin-bottom: 20px;

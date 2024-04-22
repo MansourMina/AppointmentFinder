@@ -9,17 +9,11 @@ class SimpleLogic
         $this->dh = new DataHandler();
     }
 
-    function handleRequest($method, $param, $data)
+    function handleRequest($method, $param, $body)
     {
         switch ($method) {
             case "queryAppointments":
                 $res = $this->dh->queryAppointments();
-                break;
-            case "queryAppintmentsByDate":
-                $res = $this->dh->queryAppintmentsByDate($param);
-                break;
-            case "queryAppointmentsById":
-                $res = $this->dh->queryAppointmentsById($param);
                 break;
             case "querySlotsByAppointmentId":
                 $res = $this->dh->querySlotsByAppointmentId($param);
@@ -31,16 +25,16 @@ class SimpleLogic
                 $res = $this->dh->queryUserFromAppointment($param);
                 break;
             case "addSlotsByAppointmentId":
-                $res = $this->dh->addSlotsByAppointmentId($data);
+                $res = $this->dh->addSlotsByAppointmentId($body);
                 break;
             case "createAppointment":
-                $res = $this->dh->createAppointment($data);
+                $res = $this->dh->createAppointment($body);
                 break;
             case "deleteAppointment":
                 $res = $this->dh->deleteAppointment($param);
                 break;
             default:
-                $res = -1;
+                $res = null;
                 break;
         }
         return $res;
