@@ -1,12 +1,12 @@
 <?php
 include("db/dataHandler.php");
 
-class SimpleLogic
+class SimpleLogic //deklariert die Klasse SimpleLogic
 {
-    private $dh;
+    private $dh; //deklariert eine private Variable $dh
     function __construct()
     {
-        $this->dh = new DataHandler();
+        $this->dh = new DataHandler(); //erstellt DataHandler und weist dh zu
     }
 
     function handleRequest($method, $param, $body)

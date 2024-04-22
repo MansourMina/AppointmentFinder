@@ -1,5 +1,5 @@
 <?php
-include_once 'db.php';
+include_once 'db.php'; //Bindet die Datei db.php
 
 class DataHandler //Definiert Klasse DataHandler
 {
@@ -52,15 +52,15 @@ class DataHandler //Definiert Klasse DataHandler
         $stmt = db->prepare($sql);
         $stmt->bind_param("i", $appointment_id);
         $stmt->execute();
-        $res = $stmt->get_result();
-        $creds = array();
-        while (($row = $res->fetch_assoc()) !== null) {
-            $creds[] = $row;
+        $res = $stmt->get_result(); //Holt das Ergebnis der Abfrage
+        $creds = array(); 
+        while (($row = $res->fetch_assoc()) !== null) { //Läuft so lange, bis es keine weiteren Zeilen mehr im Ergebnis gibt
+            $creds[] = $row; //Speichert jede Zeile im Array creds
         }
         return $creds;
     }
 
-    public function addSlotsByAppointmentId($data)
+    public function addSlotsByAppointmentId($data) //Nimmt Daten, um Benutzer und deren Slots zu einem Termin
     {
 
         $user_id = $this->addUser($data["name"]);
@@ -70,7 +70,7 @@ class DataHandler //Definiert Klasse DataHandler
         return $user_id;
     }
 
-    public function createAppointment($data)
+    public function createAppointment($data) //Neuer Termin wird erstellt
     {
         $appointment_id = $this->addAppointment($data["appointment"]);
         foreach ($data["slots"] as $slot) {
@@ -79,7 +79,7 @@ class DataHandler //Definiert Klasse DataHandler
         return $appointment_id;
     }
 
-    public function deleteAppointment($appointment_id)
+    public function deleteAppointment($appointment_id) //Löscht den Termin
     {
         $sql = "Delete from appointments where appointment_id = ? ";
         $stmt = db->prepare($sql);
@@ -88,7 +88,7 @@ class DataHandler //Definiert Klasse DataHandler
         return $stmt;
     }
 
-    private function addSlots($appointment_id,  $start, $end, $date)
+    private function addSlots($appointment_id,  $start, $end, $date) //Fügt neue Slot ein
     {
         $sql = "INSERT INTO `slots`(`appointment_id`, `start`, `end`, `date`) VALUES (?,?,?,?)";
         $stmt = db->prepare($sql);
@@ -97,7 +97,7 @@ class DataHandler //Definiert Klasse DataHandler
         return $stmt;
     }
 
-    private function addAppointment($data)
+    private function addAppointment($data) //Fügt einen neuen Termin
     {
 
         $sql = "INSERT INTO `appointments`(`title`, `location`, `date`, `expiry_date`, `description`, `organizer_name`) VALUES (?,?,?,?,?,?)";
@@ -108,7 +108,7 @@ class DataHandler //Definiert Klasse DataHandler
         return $insertedAppointmentId;
     }
 
-    private function addUser($name)
+    private function addUser($name) //Fügt einen neuen Benutzer in die Tabelle ein
     {
         $sql = "INSERT INTO users(`name`) VALUES (?)";
         $stmt = db->prepare($sql);
@@ -118,7 +118,7 @@ class DataHandler //Definiert Klasse DataHandler
         return $insertedUserId;
     }
 
-    private function addUserSlots($user_id, $slot_id, $comment)
+    private function addUserSlots($user_id, $slot_id, $comment) //Fügt einen neuen Benutzer in die user Tabelle ein
     {
         $sql = "INSERT INTO users_slots(`user_id`, `slot_id`, `comment`) "
             . "VALUES (?, ?, ?)";
@@ -128,7 +128,7 @@ class DataHandler //Definiert Klasse DataHandler
         return $stmt;
     }
 
-    private static function getAppointments()
+    private static function getAppointments() //Sortiert die Termine
     {
         $sql = "SELECT * FROM appointments order by date desc";
         $stmt = db->prepare($sql);
