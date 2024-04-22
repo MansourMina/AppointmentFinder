@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 21, 2024 at 05:40 PM
+-- Generation Time: Apr 22, 2024 at 11:36 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -42,8 +42,11 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`appointment_id`, `title`, `location`, `date`, `expiry_date`, `description`, `organizer_name`) VALUES
-(110, 'Business', 'Vienna', '2024-04-21', '2024-04-21', 'Test', 'Bertan Taan'),
-(111, 'Fussball', 'London', '2024-04-23', '2024-04-23', 'KOmm gema', 'Mina Mansour');
+(120, 'Projekt Kick-off', 'Online (Zoom)', '2024-04-20', '2024-04-20', 'Erstes Treffen des Entwicklungsteams für das neue Kundenportal.', 'Maria Schmidt'),
+(121, 'Jahresabschlusspräsentation', 'Hauptbüro, Raum 2001', '2024-04-22', '2024-04-22', 'Präsentation der Geschäftsergebnisse und -ziele für das nächste Jahr.', 'John Doe'),
+(122, 'Teambuilding-Workshop', 'Eventhalle Nord', '2024-04-26', '2024-04-23', 'Workshop zur Stärkung der Teamdynamik und Verbesserung der Kommunikation.\n', 'Maria Schmidt'),
+(124, 'Fussball Event', 'Soocerdome', '2024-04-26', '2024-04-25', '', 'Johannes Schlotterberg'),
+(125, 'Sprint Meetings', 'Zoom', '2024-04-27', '2024-04-21', 'Jeder Zeigt seine Ergebnisse', 'Mark Zuckerberg');
 
 -- --------------------------------------------------------
 
@@ -64,13 +67,25 @@ CREATE TABLE `slots` (
 --
 
 INSERT INTO `slots` (`slot_id`, `appointment_id`, `start`, `end`, `date`) VALUES
-(162, 110, '2024-04-21 15:00:00', '2024-04-21 15:30:00', '2024-04-21'),
-(163, 110, '2024-04-21 15:30:00', '2024-04-21 16:00:00', '2024-04-21'),
-(164, 110, '2024-04-21 14:30:00', '2024-04-21 15:00:00', '2024-04-21'),
-(165, 110, '2024-04-21 16:00:00', '2024-04-21 16:30:00', '2024-04-21'),
-(166, 111, '2024-04-21 16:00:00', '2024-04-21 16:20:00', '2024-04-23'),
-(167, 111, '2024-04-21 15:00:00', '2024-04-21 15:20:00', '2024-04-23'),
-(168, 111, '2024-04-21 16:20:00', '2024-04-21 16:40:00', '2024-04-23');
+(183, 120, '2024-04-20 06:00:00', '2024-04-20 06:20:00', '2024-04-20'),
+(184, 120, '2024-04-20 06:20:00', '2024-04-20 06:40:00', '2024-04-20'),
+(185, 120, '2024-04-20 06:40:00', '2024-04-20 07:00:00', '2024-04-20'),
+(187, 121, '2024-04-22 06:00:00', '2024-04-22 07:00:00', '2024-04-22'),
+(188, 121, '2024-04-22 09:00:00', '2024-04-22 10:00:00', '2024-04-22'),
+(189, 121, '2024-04-22 10:00:00', '2024-04-22 11:00:00', '2024-04-22'),
+(190, 121, '2024-04-22 11:00:00', '2024-04-22 12:00:00', '2024-04-22'),
+(191, 122, '2024-04-22 07:00:00', '2024-04-22 07:30:00', '2024-04-26'),
+(192, 122, '2024-04-22 08:00:00', '2024-04-22 08:30:00', '2024-04-26'),
+(193, 122, '2024-04-22 08:30:00', '2024-04-22 09:00:00', '2024-04-26'),
+(201, 124, '2024-04-22 06:40:00', '2024-04-22 07:20:00', '2024-04-26'),
+(202, 124, '2024-04-22 07:40:00', '2024-04-22 08:20:00', '2024-04-26'),
+(203, 124, '2024-04-22 08:40:00', '2024-04-22 09:20:00', '2024-04-26'),
+(204, 124, '2024-04-22 09:00:00', '2024-04-22 09:40:00', '2024-04-26'),
+(205, 125, '2024-04-22 06:30:00', '2024-04-22 06:45:00', '2024-04-27'),
+(206, 125, '2024-04-22 06:45:00', '2024-04-22 07:00:00', '2024-04-27'),
+(207, 125, '2024-04-22 07:00:00', '2024-04-22 07:15:00', '2024-04-27'),
+(208, 125, '2024-04-22 07:15:00', '2024-04-22 07:30:00', '2024-04-27'),
+(209, 125, '2024-04-22 07:30:00', '2024-04-22 07:45:00', '2024-04-27');
 
 -- --------------------------------------------------------
 
@@ -91,7 +106,26 @@ INSERT INTO `users` (`user_id`, `name`) VALUES
 (67, 'Mina Mansour'),
 (68, 'Andy'),
 (69, 'Bertan'),
-(70, 'Andy');
+(70, 'Andy'),
+(71, 'Nicencss'),
+(72, 'Vamos'),
+(73, 'dsa'),
+(74, 'dsa'),
+(75, 'dsa'),
+(76, 'Mina Mansour'),
+(77, 'Bertan'),
+(78, 'Max Mustermann'),
+(79, 'Filip Barken'),
+(80, 'Bertan Tan'),
+(81, 'Mina Mansour'),
+(82, 'Bertan Tan'),
+(83, 'das'),
+(84, 'Bertan Tan'),
+(85, 'Mina Mansour'),
+(86, 'Filip Johannesberg'),
+(87, 'Max Musterknabe'),
+(88, 'Mina Mansour'),
+(89, 'Bertan Tan');
 
 -- --------------------------------------------------------
 
@@ -111,15 +145,22 @@ CREATE TABLE `users_slots` (
 --
 
 INSERT INTO `users_slots` (`user_slot_id`, `user_id`, `slot_id`, `comment`) VALUES
-(113, 67, 162, 'Vamos'),
-(114, 67, 163, 'Vamos'),
-(115, 68, 164, 'Manyak'),
-(116, 68, 163, 'Manyak'),
-(117, 69, 166, 'Nice'),
-(118, 69, 168, 'Nice'),
-(119, 69, 167, 'Nice'),
-(120, 70, 166, 'Niceness'),
-(121, 70, 167, 'Niceness');
+(134, 78, 191, ''),
+(135, 78, 192, ''),
+(136, 79, 192, 'Komme mit einer Begleitung'),
+(137, 79, 193, 'Komme mit einer Begleitung'),
+(138, 80, 192, ''),
+(142, 84, 183, 'Komme pünktlich'),
+(143, 84, 184, 'Komme pünktlich'),
+(144, 84, 185, 'Komme pünktlich'),
+(145, 85, 184, ''),
+(146, 85, 185, ''),
+(147, 86, 205, ''),
+(148, 87, 207, 'Yes Sir!'),
+(149, 88, 187, 'Haben keine Präsi sorry!'),
+(150, 88, 188, 'Haben keine Präsi sorry!'),
+(151, 89, 189, 'Wir haben eine Präse'),
+(152, 89, 190, 'Wir haben eine Präse');
 
 --
 -- Indexes for dumped tables
@@ -160,25 +201,25 @@ ALTER TABLE `users_slots`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT for table `slots`
 --
 ALTER TABLE `slots`
-  MODIFY `slot_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
+  MODIFY `slot_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=210;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
 
 --
 -- AUTO_INCREMENT for table `users_slots`
 --
 ALTER TABLE `users_slots`
-  MODIFY `user_slot_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+  MODIFY `user_slot_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- Constraints for dumped tables
